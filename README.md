@@ -14,8 +14,6 @@ utilizing the available cores on a given device.
 If you want to wait for an interval other than 5 seconds, just specify
 the number of seconds as an argument on the command line.
 
-== Example
-
 ```
 $ ./adbcores 10
 measuring CPU usage over 10.0 seconds
