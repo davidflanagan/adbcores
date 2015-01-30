@@ -1,5 +1,5 @@
-adbcores -- Report the usage of each CPU core for a FirefoxOS or Android device
-connected via ADB
+coresample -- Report the usage of each CPU core for a FirefoxOS or
+Android device connected via ADB
 
 This is a very simple Python script that uses adb to communicate with
 the FirefoxOS or Android device connected to your computer via USB
@@ -15,11 +15,24 @@ If you want to wait for an interval other than 5 seconds, just specify
 the number of seconds as an argument on the command line.
 
 ```
-$ ./adbcores 10
+$ ./coresample 10
 measuring CPU usage over 10.0 seconds
-CPU     BUSY%   IDLE%   WAIT%
-0       59%     41%     0%
-1       58%     42%     0%
-2       37%     63%     0%
-3       27%     73%     0%
+CPU     WORK    BUSY    IDLE    WAIT
+0       46%     37%     61%     2%
+1       43%     34%     65%     1%
+2       8%      6%      94%     0%
+3       4%      3%      97%     0%
 ```
+
+The output columns are as follows:
+
+- CPU: the core number
+
+- WORK: what percentage of the total work done during the sample
+period was done on this core
+
+- BUSY: the percentage of the sample time that this core was busy
+
+- IDLE: the percentage of the sample time that this core was busy
+
+- WAIT: the percentage of the sample time that this core was blocked on I/O.

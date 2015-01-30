@@ -8,6 +8,20 @@
 # to determine how efficiently and Android or FirefoxOS app is using the
 # available cores.
 #
+# The output columns are as follows:
+#
+#  CPU: the core number
+#
+#  WORK: what percentage of the total work done during the sample period
+#     was done on this core
+#
+#  BUSY: the percentage of the sample time that this core was busy
+#
+#  IDLE: the percentage of the sample time that this core was busy
+#
+#  WAIT: the percentage of the sample time that this core was blocked on I/O.
+#
+#
 import sys
 import subprocess
 import time
@@ -31,8 +45,10 @@ endstats = subprocess.check_output(["adb","shell", "cat", "/proc/stat"])
 start = [line.split(' ') for line in startstats.splitlines()[1:] if line.startswith('cpu')]
 end = [line.split(' ') for line in endstats.splitlines()[1:] if line.startswith('cpu')]
 
-# Report usage results for each processor core
-print("CPU\tBUSY%\tIDLE%\tWAIT%");
+# Loop through the data and compute the busy values for each CPU
+# and the total of all those values
+totalbusy = 0
+busycounts = []
 for cpu in range(0,len(start)):
   e = [float(n) for n in end[cpu][1:]]
   s = [float(n) for n in start[cpu][1:]]
@@ -41,6 +57,16 @@ for cpu in range(0,len(start)):
   system = e[2] - s[2]
   irq = (e[5] - s[5]) + (e[6] - s[6])
   busy = user + nice + system + irq
+  busycounts.append(busy)
+  totalbusy = totalbusy + busy
+
+# Now loop again and report results
+# Report usage results for each processor core
+print("CPU\tWORK\tBUSY\tIDLE\tWAIT");
+for cpu in range(0,len(start)):
+  e = [float(n) for n in end[cpu][1:]]
+  s = [float(n) for n in start[cpu][1:]]
+  busy = busycounts[cpu]
   idle = e[3] - s[3]
   wait = e[4] - s[4]
   elapsed = sleep * 100
@@ -49,5 +75,5 @@ for cpu in range(0,len(start)):
   # and nothing is recorded for them. In this case, we'll call them idle
   if (sum < elapsed):
     idle = idle + (elapsed - sum)
-  print("{}\t{:.0%}\t{:.0%}\t{:.0%}"
-        .format(cpu, busy/elapsed, idle/elapsed, wait/elapsed))
+  print("{}\t{:.0%}\t{:.0%}\t{:.0%}\t{:.0%}"
+        .format(cpu, busy/totalbusy, busy/elapsed, idle/elapsed, wait/elapsed))
