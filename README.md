@@ -1,7 +1,8 @@
 coresample -- Report the usage of each CPU core for a FirefoxOS or
 Android device connected via ADB
 
-This is a very simple Python script that uses adb to communicate with
+This is a very simple Python script (I'm a python novice -- pull requests welcome) 
+that uses adb to communicate with
 the FirefoxOS or Android device connected to your computer via USB
 cable. It records the contents of /proc/stat, waits 5 seconds, and
 then records the contents of that file again. By subtracting the first
